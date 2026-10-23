@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for FastAPI application
 # Build stage
-FROM python:3.11-slim-bullseye as builder
+FROM python:3.11-slim-bookworm AS builder
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -24,7 +24,7 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 # Production stage
-FROM python:3.11-slim-bullseye as production
+FROM python:3.11-slim-bookworm AS production
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -32,11 +32,13 @@ ENV PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH"
 
 # Install runtime dependencies
-RUN apt-get update && apt-get install -y \
-    libpq5 \
-    curl \
+RUN apt-get update --fix-missing \
+    && apt-get install -y --no-install-recommends \
+        libpq5 \
+        curl \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r appuser && useradd -r -g appuser appuser
+    && groupadd -r appuser \
+    && useradd -r -g appuser appuser
 
 # Copy virtual environment from builder stage
 COPY --from=builder /opt/venv /opt/venv

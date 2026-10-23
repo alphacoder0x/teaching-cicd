@@ -38,5 +38,5 @@ mypy==1.7.1
 pre-commit==3.6.0
 
 # Types
-types-passlib==1.7.7.14
+types-passlib==1.7.7.13
 types-python-jose==3.3.4.8
