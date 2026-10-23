@@ -9,8 +9,8 @@ services:
       POSTGRES_USER: fastapi
       POSTGRES_PASSWORD: password
       POSTGRES_DB: fastapi_db
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -24,14 +24,16 @@ services:
 
   # FastAPI Application
   app:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
     container_name: fastapi-app
     environment:
-      - DATABASE_URL=postgresql://fastapi:password@db:5432/fastapi_db
-      - ENVIRONMENT=development
-      - LOG_FORMAT=console
+      DATABASE_URL: postgresql+asyncpg://fastapi:password@db:5432/fastapi_db
+      ENVIRONMENT: development
+      LOG_FORMAT: console
     ports:
       - "8000:8000"
     volumes:
